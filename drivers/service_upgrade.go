@@ -100,13 +100,12 @@ func (s *ServiceUpgradeDriver) Execute(conf interface{}, apiClient *client.Ranch
 	pushedImage := ""
 	switch config.PayloadFormat {
 	case "alicloud":
-		alicloudFullName, fullnameOk := repository.(map[string]interface{})["repo_full_name"].(string)
-		alicloudRegion, regionOk := repository.(map[string]interface{})["region"].(string)
-		if fullnameOk && regionOk {
-			imageName := "registry." + alicloudRegion + ".aliyuncs.com/" + alicloudFullName
+		alicloudFullName, fullnameOk := repository.(map[string]interface{})["repo_name"].(string)
+		if fullnameOk {
+			imageName := "docker.tianlu56.com.cn/" + alicloudFullName
 			pushedImage = imageName + ":" + pushedTag
 		} else {
-			return http.StatusBadRequest, fmt.Errorf("Alicloud Docker Hub response provided without image name")
+			return http.StatusBadRequest, fmt.Errorf("Private Docker Hub response provided without image name")
 		}
 	default:
 		imageName, ok := repository.(map[string]interface{})["repo_name"].(string)

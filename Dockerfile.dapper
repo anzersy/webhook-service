@@ -1,6 +1,6 @@
 FROM ubuntu:16.04
 # FROM arm=armhf/ubuntu:16.04
-
+ENV https_proxy=192.168.1.153:1087
 ARG DAPPER_HOST_ARCH
 ENV HOST_ARCH=${DAPPER_HOST_ARCH} ARCH=${DAPPER_HOST_ARCH}
 
@@ -11,8 +11,12 @@ RUN apt-get update && \
 ENV GOLANG_ARCH_amd64=amd64 GOLANG_ARCH_arm=armv6l GOLANG_ARCH=GOLANG_ARCH_${ARCH} \
     GOPATH=/go PATH=/go/bin:/usr/local/go/bin:${PATH} SHELL=/bin/bash
 
-RUN wget -O - https://storage.googleapis.com/golang/go1.7.5.linux-${!GOLANG_ARCH}.tar.gz | tar -xzf - -C /usr/local && \
-    go get github.com/rancher/trash && go get github.com/golang/lint/golint
+RUN wget -O - https://storage.googleapis.com/golang/go1.8.3.linux-${!GOLANG_ARCH}.tar.gz | tar -xzf - -C /usr/local 
+RUN go get github.com/rancher/trash
+RUN mkdir -p /go/src/golang.org/x
+WORKDIR /go/src/golang.org/x
+RUN git clone https://github.com/golang/tools.git
+RUN go get github.com/golang/lint/golint
 
 ENV DOCKER_URL_amd64=https://get.docker.com/builds/Linux/x86_64/docker-1.10.3 \
     DOCKER_URL_arm=https://github.com/rancher/docker/releases/download/v1.10.3-ros1/docker-1.10.3_arm \
